@@ -1,17 +1,25 @@
 import React from 'react';
-import { BookOpen, ArrowLeft } from 'lucide-react';
+import { BookOpen, ArrowLeft, FolderOpen } from 'lucide-react';
 import { ActivePage } from '../types';
 
 interface NavbarProps {
   activePage: ActivePage;
   onNavigate: (page: ActivePage) => void;
   hasResults: boolean;
+  savedCount?: number;
+  onOpenLibrary?: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, hasResults }) => {
+export const Navbar: React.FC<NavbarProps> = ({
+  activePage,
+  onNavigate,
+  hasResults,
+  savedCount = 0,
+  onOpenLibrary,
+}) => {
   return (
     <header className="sticky top-0 z-40 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 text-white shadow-sm no-print">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4 sm:gap-8">
         {/* Zone 1: Single-line Brand Wordmark */}
         <button
           onClick={() => onNavigate('home')}
@@ -20,7 +28,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, hasResul
           <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-emerald-500 text-slate-950 font-black shadow-sm group-hover:bg-emerald-400 transition-colors">
             <BookOpen className="w-5 h-5 text-slate-950" />
           </div>
-          <span className="text-xl font-black tracking-tight text-white">
+          <span className="text-lg sm:text-xl font-black tracking-tight text-white">
             ورقتي – Wara2ty
           </span>
         </button>
@@ -45,7 +53,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, hasResul
                 : 'border-transparent text-slate-300 hover:text-white'
             }`}
           >
-            رفع وتحليل صورة
+            رفع وتحليل محاضرة
           </button>
           {hasResults && (
             <button
@@ -56,13 +64,26 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, hasResul
                   : 'border-transparent text-emerald-400 hover:text-emerald-300'
               }`}
             >
-              نتائج المحاضرة المحفوظة
+              نتائج المحاضرة الحالية
             </button>
           )}
         </nav>
 
-        {/* Zone 3: Single Primary Action */}
-        <div className="flex items-center gap-3 shrink-0">
+        {/* Zone 3: Library + Primary Action */}
+        <div className="flex items-center gap-2.5 shrink-0">
+          {onOpenLibrary && (
+            <button
+              type="button"
+              onClick={onOpenLibrary}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs border border-slate-700 transition-colors whitespace-nowrap shrink-0 cursor-pointer tabular-nums"
+              title="مكتبة محاضراتي المحفوظة"
+            >
+              <FolderOpen className="w-4 h-4 text-emerald-400" />
+              <span className="hidden sm:inline">محاضراتي</span>
+              <span className="text-emerald-400">({savedCount})</span>
+            </button>
+          )}
+
           {activePage !== 'upload' ? (
             <button
               onClick={() => onNavigate('upload')}

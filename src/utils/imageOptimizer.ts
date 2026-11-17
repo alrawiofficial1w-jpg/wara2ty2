@@ -1,8 +1,6 @@
 /**
- * Smart client-side image optimizer for OCR & Computer Vision.
- * Resizes ultra-high-resolution camera images to an optimal max dimension (2048px)
- * and compresses them to prevent server memory exhaustion and 413/503 payload timeouts
- * while preserving crisp handwriting and printed text legibility.
+ * Smart client-side image optimizer for OCR & Computer Vision,
+ * plus safe FileReader helper for PDF lecture documents.
  */
 
 export interface OptimizedImageResult {
@@ -17,6 +15,22 @@ export interface OptimizedImageResult {
 
 const MAX_OCR_DIMENSION = 1600;
 const JPEG_QUALITY = 0.82;
+
+export async function readPdfAsDataUrl(file: File): Promise<{ dataUrl: string; sizeBytes: number }> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('تعذر قراءة ملف الـ PDF من الجهاز.'));
+    reader.onload = () => {
+      const result = reader.result as string;
+      if (!result) {
+        reject(new Error('محتوى ملف الـ PDF فارغ أو غير صالح.'));
+        return;
+      }
+      resolve({ dataUrl: result, sizeBytes: file.size });
+    };
+    reader.readAsDataURL(file);
+  });
+}
 
 export async function optimizeImageForAnalysis(file: File): Promise<OptimizedImageResult> {
   return new Promise((resolve, reject) => {
@@ -41,9 +55,8 @@ export async function optimizeImageForAnalysis(file: File): Promise<OptimizedIma
 
           const needsResize =
             targetWidth > MAX_OCR_DIMENSION || targetHeight > MAX_OCR_DIMENSION;
-          const isLargeFile = file.size > 1.2 * 1024 * 1024; // > 1.2 MB
+          const isLargeFile = file.size > 1.2 * 1024 * 1024;
 
-          // If the image is already small and within optimal dimensions, return as-is
           if (!needsResize && !isLargeFile) {
             resolve({
               dataUrl: rawDataUrl,
@@ -85,7 +98,6 @@ export async function optimizeImageForAnalysis(file: File): Promise<OptimizedIma
             return;
           }
 
-          // Fill white background in case of transparent PNGs so handwritten dark ink has high contrast
           ctx.fillStyle = '#FFFFFF';
           ctx.fillRect(0, 0, targetWidth, targetHeight);
           ctx.imageSmoothingEnabled = true;
@@ -95,11 +107,9 @@ export async function optimizeImageForAnalysis(file: File): Promise<OptimizedIma
           const outputMime = 'image/jpeg';
           const compressedDataUrl = canvas.toDataURL(outputMime, JPEG_QUALITY);
 
-          // Estimate byte size from base64 length
           const base64Part = compressedDataUrl.split(',')[1] || '';
           const estimatedBytes = Math.round((base64Part.length * 3) / 4);
 
-          // If compression somehow made a tiny file larger, keep original
           if (!needsResize && estimatedBytes >= file.size) {
             resolve({
               dataUrl: rawDataUrl,
@@ -122,8 +132,7 @@ export async function optimizeImageForAnalysis(file: File): Promise<OptimizedIma
             height: targetHeight,
             wasCompressed: true,
           });
-        } catch (err) {
-          // Fallback to original image if canvas fails
+        } catch {
           resolve({
             dataUrl: rawDataUrl,
             mimeType: file.type || 'image/jpeg',

@@ -10,9 +10,22 @@ import { HomePage } from './components/HomePage';
 import { UploadSection } from './components/UploadSection';
 import { AnalysisLoading } from './components/AnalysisLoading';
 import { ResultsView } from './components/ResultsView';
-import { ActivePage, AnalysisData, AnalysisResponse, QuizQuestion } from './types';
-import { getSampleNoteImageData } from './utils/sampleNotes';
-import { saveAnalysisSession, loadAnalysisSession } from './utils/storage';
+import { SavedLecturesModal } from './components/SavedLecturesModal';
+import {
+  ActivePage,
+  AnalysisData,
+  AnalysisResponse,
+  QuizQuestion,
+  SavedLectureRecord,
+  UploadedPageInput,
+} from './types';
+import { getSampleNotePages } from './utils/sampleNotes';
+import {
+  saveAnalysisSession,
+  loadAnalysisSession,
+  loadLecturesLibrary,
+  saveLectureToLibrary,
+} from './utils/storage';
 import { AlertCircle, RefreshCw, X } from 'lucide-react';
 
 function isTemporaryOverloadError(msg: string, status?: number): boolean {
@@ -41,7 +54,7 @@ function formatArabicError(rawMsg: string): string {
     lower.includes('unavailable') ||
     lower.includes('overloaded')
   ) {
-    return 'خوادم الذكاء الاصطناعي تشهد ذروة طلبات مؤقتة في هذه اللحظة (503). اضغط على "إعادة المحاولة" وسيتم التحليل فوراً عبر المسار السريع البديل.';
+    return 'خوادم الذكاء الاصطناعي تشهد ذروة طلبات مؤقتة في هذه اللحظة (503). اضغط على "إعادة المحاولة" وسيتم التحليل عبر المسار السريع البديل.';
   }
   if (lower.includes('429') || lower.includes('resource_exhausted') || lower.includes('quota')) {
     return 'تم الوصول للحد المؤقت للطلبات في الدقيقة (429). يرجى الانتظار بضع ثوانٍ ثم الضغط على "إعادة المحاولة".';
@@ -54,66 +67,93 @@ function formatArabicError(rawMsg: string): string {
 
 export default function App() {
   const [activePage, setActivePage] = useState<ActivePage>('home');
-  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-  const [uploadedMime, setUploadedMime] = useState<string>('image/jpeg');
+  const [uploadedPages, setUploadedPages] = useState<UploadedPageInput[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [retryNotice, setRetryNotice] = useState<string | null>(null);
   const [analysisResult, setAnalysisResult] = useState<AnalysisData | null>(null);
+  const [activeLectureId, setActiveLectureId] = useState<string | undefined>(undefined);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Restore saved session from localStorage on initial load
+  const [savedLectures, setSavedLectures] = useState<SavedLectureRecord[]>([]);
+  const [isLibraryOpen, setIsLibraryOpen] = useState<boolean>(false);
+
+  // Restore saved session & library from localStorage on initial load
   useEffect(() => {
     const saved = loadAnalysisSession();
     if (saved && saved.data) {
       setAnalysisResult(saved.data);
       if (saved.image) {
-        setUploadedImage(saved.image);
+        setUploadedPages([
+          {
+            id: 'restored-p1',
+            pageNumber: 1,
+            name: 'المحاضرة المحفوظة',
+            dataUrl: saved.image,
+            mimeType: saved.image.startsWith('data:application/pdf') ? 'application/pdf' : 'image/jpeg',
+            sizeLabel: 'محفوظة',
+          },
+        ]);
       }
     }
+    setSavedLectures(loadLecturesLibrary());
   }, []);
 
-  // Navigate to Upload page from Home CTA
+  const persistCurrentLecture = (updatedData: AnalysisData, previewImg: string | null) => {
+    saveAnalysisSession(updatedData, previewImg);
+    const savedRec = saveLectureToLibrary(updatedData, previewImg, { id: activeLectureId });
+    setActiveLectureId(savedRec.id);
+    setSavedLectures(loadLecturesLibrary());
+  };
+
   const handleStartNow = () => {
     setErrorMessage(null);
     setActivePage('upload');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Select a preset sample note
   const handleSelectSample = (sampleId: string) => {
     setErrorMessage(null);
-    const dataUrl = getSampleNoteImageData(sampleId);
-    if (dataUrl) {
-      setUploadedImage(dataUrl);
-      setUploadedMime('image/jpeg');
+    const samplePages = getSampleNotePages(sampleId);
+    if (samplePages.length > 0) {
+      setUploadedPages(samplePages);
       setActivePage('upload');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
-  // Trigger real multimodal Gemini AI analysis via backend API with automatic client-side retry on 503
-  const handleAnalyze = async (base64Image: string, mimeType: string) => {
+  // Analyze single image, multi-page images, or PDF lecture document
+  const handleAnalyze = async (pagesToAnalyze: UploadedPageInput[]) => {
+    if (!pagesToAnalyze || pagesToAnalyze.length === 0) return;
     setIsLoading(true);
     setRetryNotice(null);
     setErrorMessage(null);
-    setUploadedImage(base64Image);
-    setUploadedMime(mimeType || 'image/jpeg');
+    setUploadedPages(pagesToAnalyze);
 
     const maxClientAttempts = 3;
+    const isSingle = pagesToAnalyze.length === 1;
+
+    const payloadBody = isSingle
+      ? {
+          imageBase64: pagesToAnalyze[0].dataUrl,
+          mimeType: pagesToAnalyze[0].mimeType || 'image/jpeg',
+          targetLanguage: 'ar',
+        }
+      : {
+          pages: pagesToAnalyze.map((p, idx) => ({
+            pageNumber: p.pageNumber || idx + 1,
+            imageBase64: p.dataUrl,
+            mimeType: p.mimeType || 'image/jpeg',
+          })),
+          targetLanguage: 'ar',
+        };
 
     try {
       for (let attempt = 1; attempt <= maxClientAttempts; attempt++) {
         try {
           const response = await fetch('/api/analyze-note', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              imageBase64: base64Image,
-              mimeType: mimeType || 'image/jpeg',
-              targetLanguage: 'ar',
-            }),
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payloadBody),
           });
 
           const rawText = await response.text();
@@ -124,7 +164,7 @@ export default function App() {
           } catch {
             if (response.status === 413) {
               throw new Error(
-                'حجم الصورة المرسلة كبير جداً ويتجاوز سعة الخادم. يرجى اختيار صورة أصغر والمحاولة مجدداً.'
+                'حجم الملفات المرسلة كبير جداً ويتجاوز سعة الخادم. يرجى تقليل عدد الصفحات أو اختيار صور أصغر.'
               );
             }
             throw new Error(
@@ -136,10 +176,7 @@ export default function App() {
 
           if (!response.ok || !result.success || !result.data) {
             const errStr = result.error || `HTTP ${response.status}`;
-            if (
-              attempt < maxClientAttempts &&
-              isTemporaryOverloadError(errStr, response.status)
-            ) {
+            if (attempt < maxClientAttempts && isTemporaryOverloadError(errStr, response.status)) {
               setRetryNotice(
                 `الخادم يشهد ذروة طلبات لحظية، جاري إعادة المحاولة تلقائياً عبر المسار السريع (${attempt + 1}/${maxClientAttempts})...`
               );
@@ -150,7 +187,12 @@ export default function App() {
           }
 
           setAnalysisResult(result.data);
-          saveAnalysisSession(result.data, base64Image);
+          const firstPreview = pagesToAnalyze[0]?.dataUrl || null;
+          saveAnalysisSession(result.data, firstPreview);
+          const savedRec = saveLectureToLibrary(result.data, firstPreview);
+          setActiveLectureId(savedRec.id);
+          setSavedLectures(loadLecturesLibrary());
+
           setActivePage('results');
           window.scrollTo({ top: 0, behavior: 'smooth' });
           return;
@@ -185,9 +227,16 @@ export default function App() {
       const updated: AnalysisData = {
         ...analysisResult,
         extractedText: newText,
+        textEditedSinceAnalysis: newText.trim() !== analysisResult.extractedText.trim(),
+        // Clear stale cached derivations so subsequent generation uses corrected text
+        detailedExplanations: undefined,
+        comparisonTables: undefined,
+        revisionSheet: undefined,
+        expectedExamQuestions: undefined,
+        mindMap: undefined,
       };
       setAnalysisResult(updated);
-      saveAnalysisSession(updated, uploadedImage);
+      persistCurrentLecture(updated, uploadedPages[0]?.dataUrl || null);
     }
   };
 
@@ -198,12 +247,44 @@ export default function App() {
         quiz: newQuiz,
       };
       setAnalysisResult(updated);
-      saveAnalysisSession(updated, uploadedImage);
+      persistCurrentLecture(updated, uploadedPages[0]?.dataUrl || null);
     }
   };
 
+  const handleUpdateAnalysisData = (updater: (prev: AnalysisData) => AnalysisData) => {
+    setAnalysisResult((prev) => {
+      if (!prev) return prev;
+      const updated = updater(prev);
+      persistCurrentLecture(updated, uploadedPages[0]?.dataUrl || null);
+      return updated;
+    });
+  };
+
+  const handleOpenSavedLecture = (record: SavedLectureRecord) => {
+    setAnalysisResult(record.data);
+    setActiveLectureId(record.id);
+    if (record.previewImage) {
+      setUploadedPages([
+        {
+          id: `lib_${record.id}`,
+          pageNumber: 1,
+          name: record.title,
+          dataUrl: record.previewImage,
+          mimeType: record.previewImage.startsWith('data:application/pdf') ? 'application/pdf' : 'image/jpeg',
+          sizeLabel: 'محفوظة',
+        },
+      ]);
+    } else {
+      setUploadedPages([]);
+    }
+    saveAnalysisSession(record.data, record.previewImage || null);
+    setActivePage('results');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleAnalyzeAnother = () => {
-    setUploadedImage(null);
+    setUploadedPages([]);
+    setActiveLectureId(undefined);
     setErrorMessage(null);
     setActivePage('upload');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -215,9 +296,10 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const originalImageUrls = uploadedPages.map((p) => p.dataUrl);
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 font-sans selection:bg-emerald-500 selection:text-white">
-      {/* Top Navigation */}
       <Navbar
         activePage={activePage}
         onNavigate={(page) => {
@@ -226,9 +308,10 @@ export default function App() {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         hasResults={!!analysisResult}
+        savedCount={savedLectures.length}
+        onOpenLibrary={() => setIsLibraryOpen(true)}
       />
 
-      {/* Global Error Banner */}
       {errorMessage && (
         <div className="max-w-4xl mx-auto px-4 mt-6 w-full no-print">
           <div className="bg-rose-50 border border-rose-200 text-rose-900 p-4 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
@@ -240,11 +323,11 @@ export default function App() {
               </div>
             </div>
             <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
-              {uploadedImage && (
+              {uploadedPages.length > 0 && (
                 <button
                   onClick={() => {
                     setErrorMessage(null);
-                    handleAnalyze(uploadedImage, uploadedMime);
+                    handleAnalyze(uploadedPages);
                   }}
                   className="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
                 >
@@ -264,10 +347,9 @@ export default function App() {
         </div>
       )}
 
-      {/* Main Content Area */}
       <main className="flex-1">
         {isLoading ? (
-          <AnalysisLoading retryNotice={retryNotice} />
+          <AnalysisLoading retryNotice={retryNotice} pageCount={uploadedPages.length || 1} />
         ) : (
           <>
             {activePage === 'home' && (
@@ -280,6 +362,8 @@ export default function App() {
                   setActivePage('results');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
+                savedLecturesCount={savedLectures.length}
+                onOpenLibrary={() => setIsLibraryOpen(true)}
               />
             )}
 
@@ -287,26 +371,35 @@ export default function App() {
               <UploadSection
                 onAnalyze={handleAnalyze}
                 isLoading={isLoading}
-                initialImageData={uploadedImage}
+                initialPages={uploadedPages}
               />
             )}
 
             {activePage === 'results' && analysisResult && (
               <ResultsView
                 data={analysisResult}
-                originalImage={uploadedImage}
+                originalImage={originalImageUrls[0] || null}
+                originalImages={originalImageUrls}
                 onAnalyzeAnother={handleAnalyzeAnother}
                 onGoHome={handleGoHome}
                 onUpdateExtractedText={handleUpdateExtractedText}
                 onUpdateQuiz={handleUpdateQuiz}
+                onUpdateAnalysisData={handleUpdateAnalysisData}
               />
             )}
           </>
         )}
       </main>
 
-      {/* Professional Footer */}
       <Footer onStartNow={handleStartNow} />
+
+      <SavedLecturesModal
+        isOpen={isLibraryOpen}
+        onClose={() => setIsLibraryOpen(false)}
+        lectures={savedLectures}
+        onRefreshLectures={setSavedLectures}
+        onOpenLecture={handleOpenSavedLecture}
+      />
     </div>
   );
 }

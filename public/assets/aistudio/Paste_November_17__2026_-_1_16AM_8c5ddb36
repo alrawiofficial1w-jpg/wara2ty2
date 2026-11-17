@@ -1,0 +1,820 @@
+MASTER DEVELOPMENT PROMPT
+
+Wara2ty – Your Smart Study Assistant
+
+Existing Project Enhancement & Advanced AI Study Features
+
+---
+
+1. PROJECT IDENTITY AND OBJECTIVE
+
+You are working on an existing educational web application called Wara2ty (ورقتي) – Your Smart Study Assistant.
+
+Official website:
+https://wara2ty.ai.studio
+
+Tagline:
+Your lectures, organized. Your learning, smarter.
+
+Arabic tagline:
+محاضراتك في مكان واحد، ومذاكرتك بطريقة أذكى.
+
+Wara2ty is an AI-powered educational assistant that transforms lecture images and study materials into organized, understandable, and interactive learning resources.
+
+The main objective is to help students move from raw lecture materials to a complete study experience through one integrated application.
+
+CRITICAL INSTRUCTION
+
+This is an EXISTING PROJECT.
+
+Do not create a new application from scratch.
+
+Do not replace the existing architecture, rewrite the entire codebase, remove existing features, or change the core identity of the product.
+
+First inspect and understand the existing codebase, components, application structure, current functionality, backend, API integration, and deployment configuration.
+
+Then implement the requested improvements directly into the existing project.
+
+Preserve all working functionality and improve the application incrementally.
+
+The application must remain focused on analyzing uploaded lectures and helping students study those lectures. Do not transform it into a standalone language-learning platform, grammar course, or Duolingo-style application.
+
+---
+
+2. EXISTING FEATURES THAT MUST BE PRESERVED
+
+The current application already provides the following capabilities.
+
+Preserve and improve all of them:
+
+1. Image Upload
+   
+   - Allow students to upload lecture images.
+   - Display an image preview before analysis.
+   - Support the image formats already supported by the current application.
+
+2. AI Lecture Analysis
+   
+   - Analyze uploaded lecture images using the existing Gemini integration.
+   - Understand the lecture content and organize the extracted information.
+
+3. Text Extraction
+   
+   - Extract the original text from uploaded images.
+   - Display the extracted text in an editable format.
+   - Allow copying the extracted content.
+
+4. Arabic Translation
+   
+   - Translate lecture content into Arabic.
+   - Preserve the original meaning and academic terminology.
+   - Maintain the relationship between the original text and its translation.
+
+5. Vocabulary Dictionary
+   
+   - Extract important words and terms from the lecture.
+   - Display their Arabic meanings.
+   - Include useful contextual explanations when available.
+
+6. Academic Summary
+   
+   - Generate a structured summary of the lecture.
+   - Highlight important definitions, concepts, rules, and key points.
+
+7. Interactive Quiz
+   
+   - Generate multiple-choice questions based on the uploaded lecture.
+   - Display answers and calculate the student's score.
+   - Preserve the existing quiz functionality.
+
+8. Audio Reading
+   
+   - Provide text-to-speech functionality for lecture content.
+   - Preserve the ability to listen to the study material.
+   - Improve language and pronunciation handling, especially for Turkish and Arabic.
+
+9. PDF Export and Printing
+   
+   - Allow students to export study materials as PDF.
+   - Preserve readable formatting and Arabic right-to-left text direction.
+
+10. Notes History
+    
+    - Preserve the existing notes/history functionality.
+    - Allow students to access previously saved notes through the available application interface.
+
+11. Original Image Comparison
+    
+    - Preserve access to the original uploaded lecture image while reviewing the extracted results.
+
+Do not remove, hide, or break any of these existing features.
+
+---
+
+3. NEW ADVANCED FEATURES TO IMPLEMENT
+
+Implement the following features as integrated additions to the existing lecture analysis experience.
+
+The new features should appear naturally inside the lecture results interface. Avoid creating unnecessary separate pages or making the application difficult to navigate.
+
+FEATURE 1: Detailed AI Lecture Explanation
+
+Add a new section called:
+
+Detailed Explanation – الشرح التفصيلي
+
+After analyzing a lecture, provide a detailed explanation of its content.
+
+Requirements:
+
+- Explain difficult concepts in simple Arabic.
+- Break long explanations into smaller sections.
+- Explain academic terminology.
+- Explain grammar rules and technical concepts when they appear in the uploaded lecture.
+- Include examples derived from the lecture whenever possible.
+- Explain the relationship between different topics.
+- Highlight important information students should understand.
+- Avoid adding unsupported information that is not relevant to the lecture.
+- Clearly distinguish lecture content from additional explanatory information.
+
+The explanation must be based on the uploaded material.
+
+The student should be able to choose between:
+
+- Simple Explanation.
+- Detailed Explanation.
+- Academic Explanation.
+
+These are presentation modes for the same lecture, not separate courses.
+
+FEATURE 2: Ask Your Lecture – اسأل محاضرتك
+
+Add an interactive AI question-and-answer assistant.
+
+The student should be able to ask questions about the currently uploaded lecture.
+
+Examples:
+
+- What is the main idea of this lecture?
+- Explain this rule in simple Arabic.
+- What is the difference between these two concepts?
+- Give me an example from the lecture.
+- What are the most important points I should memorize?
+
+Requirements:
+
+- Answers must be grounded in the uploaded lecture.
+- Use the extracted lecture content as the primary knowledge source.
+- Do not pretend that an answer exists in the lecture when it does not.
+- When the answer cannot be found in the uploaded material, clearly tell the student.
+- If additional general knowledge is used to clarify an answer, label it as additional explanation.
+- Maintain the context of the current lecture during the conversation.
+- Keep the interface simple and similar to a chat assistant.
+
+This feature must work as a lecture-specific assistant, not a general-purpose chatbot.
+
+FEATURE 3: Explain Selected Section – اشرح الجزء المحدد
+
+Allow students to select a word, sentence, paragraph, or section from the extracted lecture.
+
+When the student selects a section, provide an action:
+
+Explain This Selection
+
+The AI should:
+
+- Explain the selected content in Arabic.
+- Translate it when necessary.
+- Clarify difficult vocabulary.
+- Provide an example when appropriate.
+- Explain grammar or technical terminology in context.
+- Relate the selected section to the rest of the lecture.
+
+Do not force students to analyze the entire lecture again when they only need help with a small section.
+
+FEATURE 4: Smart Comparison Tables – جداول المقارنة الذكية
+
+Automatically identify concepts that can benefit from comparison.
+
+Examples:
+
+- Different grammar tenses.
+- Similar terminology.
+- Related definitions.
+- Different theories or concepts.
+- Similar rules with different uses.
+
+Generate organized comparison tables when the lecture contains relevant information.
+
+Each table should contain appropriate columns such as:
+
+- Concept.
+- Definition.
+- Main characteristics.
+- Usage.
+- Examples.
+- Differences.
+
+Important:
+Do not invent comparisons or fill missing information with unsupported assumptions.
+
+If the lecture does not contain enough information, clearly identify missing details.
+
+FEATURE 5: Expected Exam Questions – أسئلة متوقعة
+
+Generate a separate section for potential examination questions based on the lecture.
+
+Include different question types when suitable:
+
+- Multiple-choice questions.
+- True or false questions.
+- Short-answer questions.
+- Definition questions.
+- Explanation questions.
+- Comparison questions.
+
+For each question:
+
+- Provide the question clearly.
+- Allow the student to attempt an answer.
+- Provide a model answer after submission or when requested.
+- Explain why the answer is correct.
+- Identify the related lecture section when possible.
+
+Do not claim that these questions are actual examination questions.
+
+Label them as AI-generated practice or potential exam questions.
+
+FEATURE 6: OCR Confidence and Uncertain Text Review
+
+Improve the text extraction workflow.
+
+When analyzing a lecture image, identify text sections or words that the AI is uncertain about.
+
+Requirements:
+
+- Highlight uncertain words or passages.
+- Allow students to review and correct them.
+- Provide a way to compare extracted text with the original image.
+- Avoid silently replacing unclear words with guessed words.
+- Preserve the corrected text for subsequent translation, summarization, and quiz generation during the current study session.
+
+If the current AI service does not provide reliable numerical OCR confidence scores, do not invent percentages.
+
+Use clear labels such as:
+
+- Verified Text.
+- Needs Review.
+- Unclear Text.
+
+The objective is to reduce errors before generating study materials.
+
+FEATURE 7: Multi-Page Lecture Analysis
+
+Extend the existing upload workflow to support complete lecture documents.
+
+Allow students to upload multiple lecture images or supported document formats, such as PDF, where compatible with the existing backend.
+
+Requirements:
+
+- Preserve the correct page order.
+- Analyze all pages as one lecture.
+- Extract content from every page.
+- Maintain page boundaries and page references.
+- Combine the lecture content in the correct sequence.
+- Avoid treating each page as an unrelated lecture.
+- Allow the student to review individual pages.
+- Provide a combined summary and complete study results.
+
+The system must handle larger files carefully and provide clear loading and progress states.
+
+If file-size or model limitations exist, display a helpful message rather than failing silently.
+
+FEATURE 8: Revision Sheet – ورقة المراجعة النهائية
+
+Generate a compact revision sheet from the uploaded lecture.
+
+Include:
+
+- Main ideas.
+- Important definitions.
+- Essential terminology.
+- Important rules.
+- Key examples.
+- Important comparisons.
+- Points that deserve extra attention.
+- A short final review checklist.
+
+The revision sheet should be organized for quick studying before an examination.
+
+Allow the student to export it separately as PDF.
+
+Do not replace the full lecture summary with this feature. It is an additional condensed revision resource.
+
+FEATURE 9: Diagram and Image Understanding
+
+Improve the application's ability to understand visual educational content.
+
+When a lecture contains diagrams, charts, illustrations, or educational figures:
+
+- Analyze the visual content.
+- Describe what the diagram represents.
+- Explain relationships between its elements.
+- Extract labels and visible text.
+- Connect the diagram to the surrounding lecture text.
+- Identify important visual information that ordinary text extraction might miss.
+
+Do not invent information about unclear or unreadable diagrams.
+
+If a diagram cannot be interpreted reliably, indicate that it needs manual review.
+
+FEATURE 10: Advanced Table Extraction
+
+Many academic lectures contain important tables.
+
+Improve the analysis process so it can:
+
+- Detect tables inside uploaded lecture images and documents.
+- Extract rows and columns in the correct order.
+- Preserve the relationship between headers and values.
+- Display extracted tables in a readable format.
+- Allow copying and exporting tables.
+- Preserve table structure when generating PDF files.
+
+Do not convert complex tables into unstructured paragraphs when their original structure can be preserved.
+
+FEATURE 11: Interactive Mind Map – الخريطة الذهنية
+
+Generate a visual mind map based on the uploaded lecture.
+
+Requirements:
+
+- Identify the main topic.
+- Identify major sections and subtopics.
+- Organize related concepts hierarchically.
+- Display relationships between concepts.
+- Use readable Arabic labels.
+- Support right-to-left layout where appropriate.
+- Allow the student to view the mind map without leaving the lecture results experience.
+- Provide an export or printable version when technically feasible.
+
+The mind map must reflect the actual lecture structure and must not introduce unrelated topics.
+
+FEATURE 12: Bilingual Side-by-Side View
+
+Add an option to display the original lecture text and its Arabic translation next to each other.
+
+Requirements:
+
+- Display original and translated content in aligned sections.
+- Preserve paragraph order.
+- Make the original language visually distinguishable from the Arabic translation.
+- Support Arabic RTL and Turkish LTR correctly.
+- Allow the student to copy each language separately.
+- Make the layout responsive on mobile devices.
+
+The student should be able to switch between:
+
+- Original Text.
+- Arabic Translation.
+- Side-by-Side View.
+
+FEATURE 13: Advanced Quiz Modes
+
+Improve the existing quiz functionality by introducing additional study modes.
+
+Available modes:
+
+1. Quick Quiz
+   
+   - A short quiz for fast revision.
+
+2. Comprehensive Quiz
+   
+   - Questions covering the major sections of the lecture.
+
+3. Difficult Questions
+   
+   - Questions that require deeper understanding.
+
+4. Vocabulary Quiz
+   
+   - Questions focused on important terms and their meanings.
+
+5. True or False
+   
+   - Statements based on the lecture.
+
+6. Exam Simulation
+   
+   - A timed practice experience when technically supported.
+
+Requirements:
+
+- Generate questions strictly based on the uploaded lecture.
+- Provide answer explanations.
+- Calculate scores.
+- Show incorrect answers after submission.
+- Identify weak topics when enough quiz data exists.
+- Allow the student to retry.
+
+Do not claim that the quiz measures the student's complete academic ability.
+
+FEATURE 14: Audio Lesson Mode
+
+Extend the existing audio reading functionality.
+
+Add an optional:
+
+Audio Lesson – المحاضرة الصوتية
+
+The system should transform lecture content into a more natural listening experience.
+
+Requirements:
+
+- Read the lecture in a clear and natural voice.
+- Support Arabic and Turkish content where supported by the available speech engine.
+- Respect the original language of the text.
+- Avoid pronouncing Turkish text using an English voice.
+- Provide play, pause, and resume controls.
+- Allow students to listen to selected sections.
+- When possible, provide adjustable playback speed.
+
+When language-specific voices are unavailable, inform the student instead of silently using an unsuitable voice.
+
+Do not remove the existing basic text-to-speech function.
+
+FEATURE 15: Source Traceability
+
+Add references connecting generated results to their original lecture content.
+
+For relevant outputs:
+
+- Identify the page number when available.
+- Identify the original paragraph or section.
+- Show where a definition or answer came from.
+- Connect quiz questions to the relevant lecture section.
+- Connect summaries and explanations to their source material.
+
+For example:
+
+Question: What is Gelecek Zaman?
+
+Source: Page 3 – Turkish Tenses Section.
+
+Do not fabricate page numbers or source references.
+
+If exact source mapping is unavailable, state that the reference is approximate.
+
+FEATURE 16: Connected Saved Lectures
+
+Improve the existing notes/history experience.
+
+Allow students to organize previously analyzed lectures and access them more easily.
+
+Potential capabilities:
+
+- Search previously saved lectures.
+- Organize lectures by subject.
+- Add titles and tags.
+- Access saved summaries and revision sheets.
+- Compare related lectures.
+- Select multiple lectures for a combined review when appropriate.
+
+Important:
+Only implement persistent storage, cloud synchronization, or accounts if the existing application architecture supports them securely.
+
+Do not claim that information is permanently saved or synchronized across devices unless this functionality is actually implemented and tested.
+
+---
+
+4. TURKISH–ARABIC DICTIONARY ENHANCEMENT
+
+Wara2ty has an important use case for students studying Turkish.
+
+Improve the existing vocabulary feature into a more useful Turkish–Arabic academic dictionary experience.
+
+Requirements:
+
+- Display the original Turkish word.
+- Display its Arabic meaning.
+- Identify the word type when reliable.
+- Show multiple meanings when available.
+- Explain the meaning according to the lecture context.
+- Provide a simple example when supported.
+- Identify important suffixes or grammatical information when relevant.
+- Allow students to save important vocabulary.
+- Allow searching for a word inside the current lecture.
+
+Dictionary data integration
+
+Design the dictionary so that it can use a structured external dictionary dataset or an authorized dictionary API.
+
+A possible open-data source is Turkish Wiktionary data extracted through Wiktextract (Kaikki).
+
+Source:
+https://kaikki.org/trwiktionary/rawdata.html
+
+Do not assume this dataset contains complete Turkish–Arabic coverage.
+
+Inspect its actual fields, language codes, translation availability, and licensing before integration.
+
+Do not scrape proprietary dictionary applications or copy copyrighted dictionary databases without permission.
+
+Use a dictionary provider/data adapter so the dictionary source can be replaced or expanded later.
+
+When a reliable dictionary entry is unavailable, the AI may provide a contextual translation, but it must be clearly distinguished from a verified dictionary entry.
+
+---
+
+5. USER EXPERIENCE AND INTERFACE DESIGN
+
+Maintain the current Wara2ty visual identity.
+
+Design direction
+
+- Professional educational technology interface.
+- Clean and modern layout.
+- Navy blue, white, and emerald green as the primary design colors.
+- Clear typography.
+- Comfortable spacing.
+- Rounded cards and consistent components.
+- Simple navigation.
+- Mobile-first responsive behavior.
+
+Arabic and Turkish language support
+
+The application must handle:
+
+- Arabic Right-to-Left (RTL).
+- Turkish Left-to-Right (LTR).
+- Correct text alignment.
+- Correct punctuation and mixed-language content.
+- Proper font rendering for both languages.
+
+Do not allow Arabic and Turkish text to become visually mixed or incorrectly aligned.
+
+Main results interface
+
+Organize the lecture results into clear sections or tabs.
+
+Recommended structure:
+
+1. Original Image.
+2. Extracted Text.
+3. Arabic Translation.
+4. Vocabulary Dictionary.
+5. Detailed Explanation.
+6. Academic Summary.
+7. Revision Sheet.
+8. Smart Comparison.
+9. Ask Your Lecture.
+10. Quiz and Exam Questions.
+11. Mind Map.
+12. Audio Lesson.
+
+Use progressive disclosure: keep the main results easy to understand and allow students to open advanced features when needed.
+
+Do not overload the first screen with too many controls.
+
+Make sure all sections remain usable on mobile phones.
+
+---
+
+6. AI INTEGRATION AND CONTENT QUALITY
+
+Continue using the existing Google Gemini integration.
+
+Do not hardcode a new or unverified Gemini model identifier.
+
+Inspect the current integration and use the available supported model and configuration.
+
+Use multimodal capabilities to analyze images and supported documents where available.
+
+AI output quality requirements
+
+- Prioritize accuracy over generating long responses.
+- Preserve the source lecture's meaning.
+- Do not invent missing content.
+- Do not fabricate examples, definitions, or citations.
+- Keep original academic terminology where appropriate.
+- Clearly identify uncertain extracted content.
+- Separate source-derived content from supplementary explanations.
+- Avoid repetitive or unnecessarily long answers.
+- Use simple Arabic explanations when the student selects a beginner-friendly mode.
+
+Every generated feature should use the same analyzed lecture context rather than independently analyzing the original image without preserving previous corrections.
+
+If the student corrects extracted text, use the corrected version in subsequent outputs.
+
+---
+
+7. TECHNICAL AND ARCHITECTURE REQUIREMENTS
+
+Before modifying the code:
+
+1. Inspect the existing application architecture.
+2. Identify the current frontend framework and components.
+3. Inspect the current backend and server configuration.
+4. Locate the existing Gemini API integration.
+5. Understand the current upload and analysis flow.
+6. Identify how notes, history, export, and audio functions work.
+7. Identify existing deployment configuration.
+
+Then implement the new features using the project's existing structure wherever possible.
+
+Important technical rules
+
+- Preserve existing working API integrations.
+- Avoid unnecessary dependencies.
+- Avoid duplicating existing components.
+- Use reusable components for repeated UI elements.
+- Handle loading, success, empty, and error states.
+- Validate uploaded files.
+- Handle large documents carefully.
+- Keep API keys and secrets out of client-side code.
+- Use secure server-side configuration for sensitive credentials.
+- Avoid exposing internal errors or sensitive server information to users.
+- Avoid breaking existing Cloud Run deployment settings.
+- Respect the deployment environment's PORT variable.
+- Ensure the server listens on the required host, such as 0.0.0.0, where applicable.
+- Maintain correct module compatibility (ES Modules/CommonJS) according to the existing project configuration.
+
+Do not replace the application's current deployment architecture without a clear technical reason.
+
+---
+
+8. PERFORMANCE AND RELIABILITY
+
+The application should remain responsive even when analyzing large lectures.
+
+Implement:
+
+- Clear loading indicators.
+- Useful progress feedback.
+- Graceful error handling.
+- Retry options for recoverable failures.
+- Prevention of accidental duplicate submissions.
+- Efficient handling of uploaded documents.
+- Reasonable AI request management.
+- Reusable lecture analysis results where appropriate.
+
+Avoid unnecessarily repeating expensive AI requests when the same output is already available and has not changed.
+
+Do not promise instant analysis or unlimited file sizes.
+
+---
+
+9. PRIVACY AND STUDENT DATA
+
+Treat uploaded lectures and student content as private educational data.
+
+Requirements:
+
+- Do not expose uploaded documents publicly.
+- Do not expose API credentials.
+- Avoid logging sensitive lecture content unnecessarily.
+- Do not claim permanent deletion, secure storage, or encryption unless the implementation supports it.
+- Clearly communicate any limitations related to saving or retaining uploaded files.
+- Do not introduce third-party data sharing without an explicit and technically valid integration.
+
+Inspect the existing data flow before changing how lecture files are stored or processed.
+
+---
+
+10. IMPLEMENTATION PRIORITIES
+
+Because this is an existing application, implement improvements in a controlled order.
+
+Priority 1 – Core Study Intelligence
+
+- Detailed Lecture Explanation.
+- Ask Your Lecture.
+- Explain Selected Section.
+- OCR Uncertainty Review.
+- Improved Vocabulary Dictionary.
+
+Priority 2 – Academic Study Tools
+
+- Smart Comparison Tables.
+- Expected Exam Questions.
+- Advanced Quiz Modes.
+- Revision Sheet.
+- Source Traceability.
+
+Priority 3 – Document and Visual Understanding
+
+- Multi-Page Lecture Analysis.
+- Advanced Table Extraction.
+- Diagram and Image Understanding.
+- Bilingual Side-by-Side View.
+
+Priority 4 – Advanced Learning Experience
+
+- Interactive Mind Map.
+- Audio Lesson Mode.
+- Connected Saved Lectures.
+
+Do not sacrifice the stability of existing features to implement all advanced features at once.
+
+If a feature requires additional infrastructure, implement the interface and underlying architecture only when practical, and clearly identify what remains incomplete.
+
+Never display a feature as fully functional when it is only a visual placeholder.
+
+---
+
+11. TESTING AND ACCEPTANCE CRITERIA
+
+After implementation, test the existing application and the newly added features.
+
+Use the Turkish lecture example previously tested:
+
+Türkçede Zamanlar – Turkish Tenses
+
+The example includes:
+
+- Geniş Zaman.
+- Geçmiş Zaman.
+- Şimdiki Zaman.
+- Gelecek Zaman.
+
+Use this type of lecture to verify:
+
+- Text extraction.
+- Arabic translation.
+- Vocabulary extraction.
+- Detailed explanation.
+- Comparison tables.
+- Revision sheet.
+- Quiz generation.
+- Turkish pronunciation.
+- Source references.
+
+Also test a lecture containing multiple pages, a table, and a visual diagram when suitable test materials are available.
+
+Acceptance checklist
+
+The project is ready for the next review only when:
+
+- The application opens successfully.
+- Existing upload and analysis functionality still works.
+- Existing translation and vocabulary features still work.
+- Existing summary and quiz functionality still work.
+- New features are connected to actual lecture content.
+- Arabic RTL and Turkish LTR display correctly.
+- PDF exports remain readable.
+- Audio controls work where supported.
+- Error and loading states are understandable.
+- Mobile layout remains usable.
+- No major deployment errors are introduced.
+
+Do not claim that a test passed unless it was actually performed.
+
+---
+
+12. FINAL DEVELOPMENT INSTRUCTIONS
+
+Work directly on the existing Wara2ty project.
+
+Your first action should be to inspect the current project and understand its implementation.
+
+Then:
+
+1. Identify the existing features and protect them.
+2. Identify the safest integration points for the new features.
+3. Implement the improvements in priority order.
+4. Maintain the existing branding and user experience.
+5. Test the entire lecture workflow.
+6. Fix any errors introduced by your changes.
+7. Verify that existing features have not regressed.
+8. Verify that the application can still build, run, and deploy using its current configuration.
+9. Provide a concise implementation report.
+
+Final report requirements
+
+At the end, report:
+
+- Features successfully implemented.
+- Existing features preserved.
+- Features that were improved.
+- Features that remain incomplete.
+- Any required environment variables or external services.
+- Any database or storage changes.
+- Testing actually performed.
+- Any known limitations or errors that still need attention.
+
+MOST IMPORTANT PRODUCT PRINCIPLE
+
+Wara2ty must remain a smart lecture-based study assistant.
+
+Its central workflow is:
+
+Upload → Analyze → Extract → Translate → Understand → Organize → Revise → Practice.
+
+Every new feature must strengthen this workflow.
+
+Do not turn the project into a collection of unrelated tools.
+
+The final experience should make the student feel that uploading one lecture gives them an organized study workspace containing the information, explanations, vocabulary, revision materials, and practice tools they need to understand that specific lecture.
+
+Build on what already exists. Preserve what works. Improve what matters. Make Wara2ty smarter, more accurate, and easier to use.
